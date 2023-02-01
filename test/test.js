@@ -7,6 +7,8 @@ const todosList = document.querySelector("#todos-list")
 const button = document.querySelector('btnAdd')
 const form = document.querySelector('#form-wrapper')
 const container = document.querySelector('container')
+const input = document.querySelector('input')
+
 
 
 
@@ -121,11 +123,13 @@ const todoListElement = () => {
             fetch(BAS_URL + '/' + todo.id, {
                 method: 'DELETE',
 
-            }).then((response) => response.json())
+            })
             .then((res) => {
                 console.log(res);
                 if(res.status === 200) {
                     li.remove()
+                    const index = todoListArray.findIndex(_todo => _todo.id == todo.id)
+                    todoListArray.splice(index, 1)
                 }
 
             })
@@ -148,7 +152,6 @@ const todoListElement = () => {
 
 //-------------------Input delen--------------------------------
 
-const input = document.querySelector('input')
 
 form.addEventListener('submit', e => {
     e.preventDefault()
