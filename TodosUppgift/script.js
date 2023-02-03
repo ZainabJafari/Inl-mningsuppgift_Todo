@@ -179,7 +179,7 @@ const checkInput = () => {
         completed: false,
     }
 
-    if (newTodo.title === '') {
+    if (newTodo.title.trim() === '') {
         setError(input)
     }
     else {
