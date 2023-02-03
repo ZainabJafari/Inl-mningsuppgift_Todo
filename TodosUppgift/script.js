@@ -1,29 +1,19 @@
 
 const BAS_URL = 'https://jsonplaceholder.typicode.com/todos/'
 
-
-
 const todosList = document.querySelector("#todos-list")
 const button = document.querySelector('btnAdd')
 const form = document.querySelector('#form-wrapper')
 const container = document.querySelector('container')
 const input = document.querySelector('input')
-
-
-
-
 const modal = document.querySelector("#myModal");
-const btn = document.querySelector("#myBtn");
-const span = document.getElementsByClassName("close")[0];
-
-
+const closeButton = document.querySelector("#close");
 
 const todoListArray = []
 
-
-
+// ---------------Hämta data-----------------------
 const hämtaData = () => {
-    fetch(BAS_URL)
+    fetch('https://jsonplaceholder.typicode.com/todos?_limit=7')
         .then(res => res.json())
         .then(data => {
             data.forEach(todo => {
@@ -39,15 +29,19 @@ const hämtaData = () => {
 }
 hämtaData()
 
-//--------------------------------------------------
-
+//-----------------Skapa elemenet---------------------------------
 
 const todoListElement = () => {
     todosList.innerHTML = ''
     todoListArray.forEach((todo) => {
 
+
         const li = document.createElement("li")
         li.className = "list-group-item"
+
+        if(todo.completed){
+            li.classList.add('hidden')
+        }
 
         const content = document.createElement("span")
         content.textContent = todo.title
@@ -58,6 +52,11 @@ const todoListElement = () => {
         doneBtn.src = "donIcon.png"
         doneBtn.alt = "done icon"
         doneBtn.className = "doneBtn"
+
+        const deleteBtn = document.createElement("img")
+        deleteBtn.src = "delete.jpg"
+        deleteBtn.className = "deleteBtn"
+        deleteBtn.alt = "delete"
 
         doneBtn.addEventListener('click', (e) => {
             fetch(BAS_URL + '/' + todo.id, {
@@ -74,10 +73,11 @@ const todoListElement = () => {
                 console.log(res);
                     if (res.completed === true) {
                         e.target.parentElement.classList.add('hidden')
-                        // const todo = todoListArray.find(Todo => Todo.id == e.target.parentElement.id)
-                        // console.log(todo);
+                        todo.completed = res.completed
+                        modal.style.display = "none"
+                        // const index = todoListArray.find(_todo => _todo.id == todo.id)
+                        // console.log(index);
                     }
-
                 })
 
         })
@@ -106,6 +106,8 @@ const todoListElement = () => {
                     console.log(res);
                     if (res.completed === false) {
                         e.target.parentElement.classList.remove('hidden')
+                        todo.completed = res.completed
+
                        
                     }
 
@@ -113,13 +115,20 @@ const todoListElement = () => {
 
         })
 
-        //----------- Delete button delen---------------   
-        const deleteBtn = document.createElement("img")
-        deleteBtn.src = "delete.jpg"
-        deleteBtn.className = "deleteBtn"
-        deleteBtn.alt = "delete"
 
         deleteBtn.addEventListener('click', (e) => {
+
+            if(todo.completed === false){
+               modal.style.display = "block"
+
+                closeButton.addEventListener('click', e =>{
+                 e.target.parentElement.style.display = "none"
+
+                })
+             return
+
+            }
+            
             fetch(BAS_URL + '/' + todo.id, {
                 method: 'DELETE',
 
@@ -149,6 +158,8 @@ const todoListElement = () => {
 
 
 }
+
+
 
 //-------------------Input delen--------------------------------
 
@@ -191,12 +202,11 @@ const checkInput = () => {
         }
 }    
 
-
+//--------funktioner för validera formulären
 
 const setError = (input) => {
     const titleInput = input.parentElement
     const small = titleInput.querySelector('small')
-    // titleInput.classList.add('error')
     small.innerText = 'The field is required'
     small.style.color = 'red'
 }
